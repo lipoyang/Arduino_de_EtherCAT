@@ -13,15 +13,15 @@ Servo servo[4];
 
 void setup()
 {
-  // 実験用サーボはポート3,4,5,6に接続
-  servo[0].attach(3);
-  servo[0].write(90);
-  servo[1].attach(4);
-  servo[1].write(90);
-  servo[2].attach(5);
-  servo[2].write(90);
-  servo[3].attach(6);
-  servo[3].write(90);
+  // サーボはポート3,4,5,6に接続 (肩、肘、手首、指)
+  const int SERVO_PORT[4] = {3,4,5,6};
+  const int L_DEG[4] = {  0,  55, 180, 100};
+  const int H_DEG[4] = {180, 175,   0,  35};
+  for(int i=0;i<4;i++){
+    int pos = (L_DEG[i] + H_DEG[i]) / 2;
+    servo[i].attach(SERVO_PORT[i]);
+    servo[i].write(pos);
+  }
   
   Serial.begin(115200);
   Serial.print ("\nEasyCAT - Generic EtherCAT slave\n");

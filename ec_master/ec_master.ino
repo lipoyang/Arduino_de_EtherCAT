@@ -241,9 +241,12 @@ void easycat_test(void)
 	}
 	
 	uint16_t vol[4] = {512,512,512,512};
-	uint8_t servo[4] = {90,90,90,90};
-	const int AMP[4] = {90,90,90,90};
-	const int NEU[4] = {90,90,90,90};
+	const int L_DEG[4] = {  0,  55, 180, 100};
+	const int H_DEG[4] = {180, 175,   0,  35};
+	uint8_t servo[4];
+	for(int i=0;i<4;i++){
+		servo[i] = (L_DEG[i] + H_DEG[i]) / 2;
+	}
 	while (1)
 	{
 		for(int i=0;i<4;i++){
@@ -257,12 +260,11 @@ void easycat_test(void)
 			uint8_t h = soem_getInputPDO(1, 2*i + 0);
 			uint8_t l = soem_getInputPDO(1, 2*i + 1);
 			vol[i] = ((uint16_t)h << 8) | (uint16_t)l;
-			servo[i] = (uint8_t)(NEU[i] + ((int)vol[i] - 512) * AMP[i] / 512);
-      //Serial.print(vol[i]);
-      Serial.print(servo[i]);
-      Serial.print(",");
+			servo[i] = map(vol[i], 0, 1023, L_DEG[i], H_DEG[i]);
+			Serial.print(servo[i]);
+			Serial.print(",");
 		}
-    Serial.print("\n");
+		Serial.print("\n");
 	}// while(true)
 
 	// 切断処理
@@ -279,7 +281,8 @@ void setup()
 void loop()
 {
   easycat_test();
-/*
+  
+#if 0
     if(Serial.available() > 0){
         char c = Serial.read();
         switch(c){
@@ -288,5 +291,5 @@ void loop()
             break;
         }
     }
-*/
+#endif
 }
