@@ -13,14 +13,14 @@ Servo servo[4];
 
 void setup()
 {
-  // 実験用サーボはポート3,5,6,9に接続
+  // 実験用サーボはポート3,4,5,6に接続
   servo[0].attach(3);
   servo[0].write(90);
-  servo[1].attach(5);
+  servo[1].attach(4);
   servo[1].write(90);
-  servo[2].attach(6);
+  servo[2].attach(5);
   servo[2].write(90);
-  servo[3].attach(9);
+  servo[3].attach(6);
   servo[3].write(90);
   
   Serial.begin(115200);
@@ -64,18 +64,16 @@ void Application ()
   {
     PreviousMillis = Millis;
     
-    // 出力バッファの0～3バイトめの値をサーボに出力
-    for(int i=0;i<4;i++){
-      int deg = easyCAT.BufferOut.Byte[i];
-      //servo[i].write(deg);
-      Serial.print(deg);
+    // 有効な受信データがあるか？
+    int enable = easyCAT.BufferOut.Byte[4];
+    if(enable == 0xA5){
+      // 出力バッファの0～3バイトめの値をサーボに出力
+      for(int i=0;i<4;i++){
+        int deg = easyCAT.BufferOut.Byte[i];
+        servo[i].write(deg);
+        Serial.print(deg);
+      }
+      Serial.print("\n");
     }
-    Serial.print("\n");
-
-    int vol = analogRead(0);
-    byte vol_h = (byte)(vol >> 8);
-    byte vol_l = (byte)(vol & 0xFF);
-    easyCAT.BufferIn.Byte[0] = vol_h;
-    easyCAT.BufferIn.Byte[1] = vol_l;
   }
 }

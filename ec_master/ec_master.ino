@@ -1,4 +1,4 @@
-#include <stdio.h>
+  #include <stdio.h>
 #include <string.h>
 #include <inttypes.h>
 #include <stdint.h>
@@ -243,11 +243,13 @@ void easycat_test(void)
 	uint16_t vol[4] = {512,512,512,512};
 	uint8_t servo[4] = {90,90,90,90};
 	const int AMP[4] = {90,90,90,90};
+	const int NEU[4] = {90,90,90,90};
 	while (1)
 	{
 		for(int i=0;i<4;i++){
 			soem_setOutPDO(2, i, servo[i]);
 		}
+		soem_setOutPDO(2, 4, 0xA5);
 		
 		soem_transferPDO();
 		
@@ -255,7 +257,7 @@ void easycat_test(void)
 			uint8_t h = soem_getInputPDO(1, 2*i + 0);
 			uint8_t l = soem_getInputPDO(1, 2*i + 1);
 			vol[i] = ((uint16_t)h << 8) | (uint16_t)l;
-			servo[i] = (uint8_t)(90 + ((int)vol[i] - 512) * AMP[i] / 1024);
+			servo[i] = (uint8_t)(NEU[i] + ((int)vol[i] - 512) * AMP[i] / 512);
       //Serial.print(vol[i]);
       Serial.print(servo[i]);
       Serial.print(",");
@@ -271,10 +273,13 @@ void easycat_test(void)
 void setup()
 {
   Serial.begin(115200);
+  delay(1000);
 }
 
 void loop()
 {
+  easycat_test();
+/*
     if(Serial.available() > 0){
         char c = Serial.read();
         switch(c){
@@ -283,4 +288,5 @@ void loop()
             break;
         }
     }
+*/
 }
