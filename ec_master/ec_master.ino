@@ -172,22 +172,6 @@ int soem_transferPDO(void)
 	}
 }
 
-// オムロン製デジタルINターミナルの値を取得する
-// slave: スレーブのインクリメンタルアドレス
-// return: 16ビットの入力値
-uint16_t OMRON_getDigitalIN(int slave)
-{
-	uint16_t ret = 0xFFFF;
-	
-	if(slave <= ec_slavecount)
-	{
-		uint16_t lsb = (uint16_t)ec_slave[slave].inputs[0];
-		uint16_t msb = (uint16_t)ec_slave[slave].inputs[1];
-		ret = (msb << 8) | lsb;
-	}
-	return ret;
-}
-
 // 汎用スレーブPDO入力
 // slave: スレーブのインクリメンタルアドレス
 // offset: オフセットアドレス
@@ -215,12 +199,10 @@ void soem_setOutPDO(int slave, int offset, uint8_t value)
 	}
 }
 
-uint16_t vol = 512;
-uint8_t servo = 90;
-
-void easycat_test(void)
+// ロボットアーム制御
+void robot_arm_ctrl(void)
 {
-    char ifname[] = "T4"; // It's dummy
+	char ifname[] = "EthernetShield2"; // It's dummy
 	
 	int result = soem_open(ifname);
 	if(result == 0)
@@ -239,14 +221,15 @@ void easycat_test(void)
 		printf("at least one slave can not reach OP state!\n");
 		return ;
 	}
-	
-	uint16_t vol[4] = {512,512,512,512};
-	const int L_DEG[4] = {  0,  55, 180, 100};
-	const int H_DEG[4] = {180, 175,   0,  35};
-	uint8_t servo[4];
+	// サーボの角度 {肩, 肘, 手首, 指} (0-180deg)
+	const int L_DEG[4] = {  0,  55, 180, 100}; // ボリューム=   0のときの角度 {右, 下, 下, 閉}
+	const int H_DEG[4] = {180, 175,   0,  35}; // ボリューム=1023のときの角度 {左, 上, 上, 開}
+	const int I_DEG[4] = { 90,  55,  90, 100}; // 初期角度 {中, 下, 中, 閉}
+	uint8_t servo[4]; // ボリュームの目標角度
 	for(int i=0;i<4;i++){
-		servo[i] = (L_DEG[i] + H_DEG[i]) / 2;
+		servo[i] = I_DEG[i];
 	}
+	int init_cnt = 0; // 初期動作カウンタ
 	while (1)
 	{
 		for(int i=0;i<4;i++){
@@ -257,10 +240,22 @@ void easycat_test(void)
 		soem_transferPDO();
 		
 		for(int i=0;i<4;i++){
+			// ボリューム値を目標角度へ換算
 			uint8_t h = soem_getInputPDO(1, 2*i + 0);
 			uint8_t l = soem_getInputPDO(1, 2*i + 1);
-			vol[i] = ((uint16_t)h << 8) | (uint16_t)l;
-			servo[i] = map(vol[i], 0, 1023, L_DEG[i], H_DEG[i]);
+			uint16_t vol = ((uint16_t)h << 8) | (uint16_t)l;
+			if(vol > 1023) vol = 1023;
+			int deg = map(vol, 0, 1023, L_DEG[i], H_DEG[i]);
+			// 初期動作(ゆっくり目標角度へ)
+			if(init_cnt < 180){
+				init_cnt++;
+				if     (servo[i] < deg) servo[i]++;
+				else if(servo[i] > deg) servo[i]--;
+			}
+			// 通常動作
+			else{
+				servo[i] = deg;
+			}
 			Serial.print(servo[i]);
 			Serial.print(",");
 		}
@@ -280,14 +275,14 @@ void setup()
 
 void loop()
 {
-  easycat_test();
+  robot_arm_ctrl();
   
 #if 0
     if(Serial.available() > 0){
         char c = Serial.read();
         switch(c){
         case 'e':
-            easycat_test();
+            robot_arm_ctrl();
             break;
         }
     }

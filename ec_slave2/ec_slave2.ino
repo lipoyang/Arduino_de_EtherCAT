@@ -15,10 +15,9 @@ void setup()
 {
   // サーボはポート3,4,5,6に接続 (肩、肘、手首、指)
   const int SERVO_PORT[4] = {3,4,5,6};
-  const int L_DEG[4] = {  0,  55, 180, 100};
-  const int H_DEG[4] = {180, 175,   0,  35};
+  const int I_DEG[4] = { 90,  55,  90, 100}; // 初期角度 {中, 下, 中, 閉}
   for(int i=0;i<4;i++){
-    int pos = (L_DEG[i] + H_DEG[i]) / 2;
+    int pos = I_DEG[i];
     servo[i].attach(SERVO_PORT[i]);
     servo[i].write(pos);
   }
