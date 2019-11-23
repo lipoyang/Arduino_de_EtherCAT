@@ -238,7 +238,15 @@ void robot_arm_ctrl(void)
 		soem_setOutPDO(2, 4, 0xA5);
 		
 		soem_transferPDO();
-		
+
+    // 初期動作(ゆっくり目標角度へ)
+    bool init_flag = false;
+    if(init_cnt < 180){
+      init_cnt++;
+      init_flag = true;
+      delay(10);
+    }
+    // 各々のサーボについて
 		for(int i=0;i<4;i++){
 			// ボリューム値を目標角度へ換算
 			uint8_t h = soem_getInputPDO(1, 2*i + 0);
@@ -247,8 +255,7 @@ void robot_arm_ctrl(void)
 			if(vol > 1023) vol = 1023;
 			int deg = map(vol, 0, 1023, L_DEG[i], H_DEG[i]);
 			// 初期動作(ゆっくり目標角度へ)
-			if(init_cnt < 180){
-				init_cnt++;
+			if(init_flag){
 				if     (servo[i] < deg) servo[i]++;
 				else if(servo[i] > deg) servo[i]--;
 			}
