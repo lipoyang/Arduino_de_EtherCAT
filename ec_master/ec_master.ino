@@ -221,6 +221,12 @@ void robot_arm_ctrl(void)
 		printf("at least one slave can not reach OP state!\n");
 		return ;
 	}
+	
+	// 時間確認用
+	int pin2_output = 0;
+	pinMode(2, OUTPUT);
+	digitalWrite(2, pin2_output);
+	
 	// サーボの角度 {肩, 肘, 手首, 指} (0-180deg)
 	const int L_DEG[4] = {  0,  55, 180, 100}; // ボリューム=   0のときの角度 {右, 下, 下, 閉}
 	const int H_DEG[4] = {180, 175,   0,  35}; // ボリューム=1023のときの角度 {左, 上, 上, 開}
@@ -232,6 +238,10 @@ void robot_arm_ctrl(void)
 	int init_cnt = 0; // 初期動作カウンタ
 	while (1)
 	{
+		// 時間確認用
+		pin2_output = 1 - pin2_output;
+		digitalWrite(2, pin2_output);
+		
 		for(int i=0;i<4;i++){
 			soem_setOutPDO(2, i, servo[i]);
 		}
