@@ -14,6 +14,8 @@
 - 依存ライブラリ: [SOEM4Arduino](https://github.com/lipoyang/SOEM4Arduino)
 - スケッチ: [ec_master/ec_master.ino](ec_master/ec_master.ino)
 
+スレーブ1から4個のポテンショメータの値を取得し、スレーブ2へ4個のマイクロサーボの指令値を設定する。
+
 ## スレーブ1
 - ハードウェア: Arduino Uno + EasyCAT Shield
 - 依存ライブラリ: [EasyCAT Library V2.0](https://www.bausano.net/en/hardware/ethercat-e-arduino/easycat.html)
@@ -32,6 +34,13 @@
 - [SG90･SG92R用ロボットアームキット2](https://www.amazon.co.jp/dp/B07ZCV7NTC/)  
 
 ※このキットではいちばんトルクを要する肘関節にはSG92Rを用いるように書かれているが、SG92を用いると著しい振動が見られたのですべての関節にSG90を用いた。(ロットによるかもしれない。)
+
+## 所感
+オーバースペックにもほどがある制御系である。
+
+<img src="wave.png" width="480">
+
+EtherCATの通信周期は実測で約1.3msecであった。本気のEthernetはこんなものではないはずだが、ジッタは数usec以下に抑えられている。そもそもマイクロサーボの制御パルスは20msec周期であるから、通信周期1.3msecでも速すぎて宝の持ち腐れである。
 
 ## 参考
 - [ArduinoやラズパイでEtherCAT - 滴了庵日録](https://lipoyang.hatenablog.com/entry/2019/08/13/125008)
