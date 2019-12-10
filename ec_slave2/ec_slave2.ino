@@ -24,16 +24,17 @@ void setup()
   
   Serial.begin(115200);
   Serial.print ("\nEasyCAT - Generic EtherCAT slave\n");
-
+  delay(100);
+  
   // EasyCATの初期化
   if (easyCAT.Init() == true)
   {
-    Serial.print ("initialized");
+    Serial.println ("initialized");
   }
   else
   {
     // 初期化に失敗した場合
-    Serial.print ("initialization failed");
+    Serial.println ("initialization failed");
     
     pinMode(13, OUTPUT);
     while(1)
@@ -44,6 +45,7 @@ void setup()
       delay(500);
     }
   }
+  delay(100);
   PreviousMillis = millis();
 }
 
