@@ -36,7 +36,7 @@
 ※このキットではいちばんトルクを要する肘関節にはSG92Rを用いるように書かれているが、SG92を用いると著しい振動が見られたのですべての関節にSG90を用いた。(ロットによるかもしれない。)
 
 ## 動画
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/RXTnEujWb5Q/.jpg)](https://www.youtube.com/watch?v=RXTnEujWb5Q)
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/RXTnEujWb5Q/0.jpg)](https://www.youtube.com/watch?v=RXTnEujWb5Q)
 
 ## 所感
 オーバースペックにもほどがある制御系である。
