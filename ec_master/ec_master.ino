@@ -3,6 +3,11 @@
 #include <inttypes.h>
 #include <stdint.h>
 
+#if defined(GRROSE)
+#include "FreeRTOS.h"
+#include "task.h"
+#endif
+
 #include <SOEM.h>
 
 // IOデータバッファ
@@ -284,24 +289,43 @@ void robot_arm_ctrl(void)
 	soem_close();
 }
 
+//********** for GR-ROSE **********
+// GR-ROSE's main task has only 512 byte stack.
+// SOEM use more than 3k byte local variables.
+// You must create another task for SOEM application.
+//   loop() : do nothing
+//   app_main() : SOEM application task function
+//   app_loop() : SOEM application main loop
+#if defined(GRROSE)
+void app_main(void* arg)
+{
+	while(1){
+		robot_arm_ctrl();
+	}
+}
 void setup()
 {
-  Serial.begin(115200);
-  delay(1000);
+    Serial.begin(115200);
+    delay(1000);
+    int ret = xTaskCreate(app_main, "APP_MAIN_TASK", 10*1024, NULL, 3, NULL);
+}
+void loop()
+{
+	; // do nothing here
+}
+#else
+
+//********** except for GR-ROSE **********
+// Use setup() and loop() as usual.
+
+void setup()
+{
+    Serial.begin(115200);
+    delay(1000);
 }
 
 void loop()
 {
   robot_arm_ctrl();
-  
-#if 0
-    if(Serial.available() > 0){
-        char c = Serial.read();
-        switch(c){
-        case 'e':
-            robot_arm_ctrl();
-            break;
-        }
-    }
-#endif
 }
+#endif
