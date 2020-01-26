@@ -49,7 +49,7 @@ EtherCATの通信周期は実測で約1.3msecであった。本気のEthernetは
 - [ArduinoやラズパイでEtherCAT - 滴了庵日録](https://lipoyang.hatenablog.com/entry/2019/08/13/125008)
 
 ## 他の対応ボード
-マスターのスケッチ [ec_master/ec_master.ino](ec_master/ec_master.ino) は、Arduino Due + Ethernet Shield 2 の他に下記のハードウェアでも動作確認できている。
+マスターのスケッチは、Arduino Due + Ethernet Shield 2 の他に下記のハードウェアでも動作確認できている。
 * GR-SAKURA
 * GR-ROSE
 
@@ -57,4 +57,8 @@ EtherCATの通信周期は実測で約1.3msecであった。本気のEthernetは
 - ハードウェア: GR-PEACH
 - 依存ライブラリ: [SOEM4Mbed](https://github.com/lipoyang/SOEM4Mbed)
 - ソース: [ec_master_mbed/main.cpp](ec_master_mbed/main.cpp)
+
+また、スレーブのスケッチは、Arduino Uno の他に下記のハードウェアでも動作確認できている。
+
+* GR-SAKURA
 

@@ -14,6 +14,10 @@ void setup()
   Serial.print ("\nEasyCAT - Generic EtherCAT slave\n");
   delay(100);
   
+#if defined(GRSAKURA) // GR-SAKURAの場合アナログ入力を12ビット生値モード
+  analogReference(RAW12BIT);
+#endif
+  
   // EasyCATの初期化
   if (easyCAT.Init() == true)
   {
@@ -55,7 +59,11 @@ void Application ()
     
     // A0～3ポートのアナログ入力値を入力バッファの0～7バイトめに格納
     for(int i=0;i<4;i++){
+#if defined(GRSAKURA) // GR-SAKURAの場合12ビット→10ビットに換算
+        int vol = analogRead(0+i) / 4;
+#else
         int vol = analogRead(0+i);
+#endif
         byte vol_h = (byte)(vol >> 8);
         byte vol_l = (byte)(vol & 0xFF);
         easyCAT.BufferIn.Byte[i*2+0] = vol_h;
